@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: condo-sync
+  datasource:
+    url: jdbc:mysql://cdm1s48crk8itlnr.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/gtu5j9la4qe2k1u6
+    username: kz2kqfyeep87dpcl
+    password: mewsngmtannz261v
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate:
+        format_sql: true
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+  security:
+    user:
+      name: user
+      password: secret123

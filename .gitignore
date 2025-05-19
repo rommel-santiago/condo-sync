@@ -19,6 +19,22 @@
 *.tar.gz
 *.rar
 
+#git
+.gitattributes
+
+#idea
+.idea
+condo-sync.iml
+HELP.md
+
+#mvn
+.mvn
+mvnw
+mvnw.cmd
+
+#target
+target/
+
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*

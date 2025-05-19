@@ -1,0 +1,48 @@
+package com.synctrack.condosync.controller.ui;
+
+import com.synctrack.condosync.dto.WorkPermitDto;
+import com.synctrack.condosync.service.WorkPermitService;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+@RequiredArgsConstructor
+public class CondoController {
+
+  private final WorkPermitService workPermitService;
+
+  @GetMapping("/")
+  public String home() {
+    return "home/home";
+  }
+
+  @GetMapping("/workPermits/forApprovals")
+  public String workPermitsForApproval(Model model) {
+    List<WorkPermitDto> workPermitDtos = workPermitService.getWorkPermitsForApproval();
+    model.addAttribute("permits", workPermitDtos);
+    return "workPermits/forApprovals";
+  }
+
+  @GetMapping("/workPermits/approved")
+  public String workPermitsApproved(Model model) {
+    List<WorkPermitDto> workPermitDtos = workPermitService.getWorkPermitsForApproval();
+    model.addAttribute("permits", workPermitDtos);
+    return "workPermits/approved";
+  }
+
+  @GetMapping("/residents")
+  public String residents() {
+    return "residents";
+  }
+
+
+
+  @GetMapping("/units")
+  public String units() {
+    return "units";
+  }
+
+}

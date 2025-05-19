@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Work Permits For Approval</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .navbar-nav .nav-link {
+      margin-right: 20px;
+      transition: font-size 0.3s ease, color 0.3s ease, font-weight 0.3s ease;
+      font-size: 1rem;
+    }
+    .navbar-nav .nav-link:hover {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #f8f9fa !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Include navbar fragment -->
+  <div th:replace="common\navigationBar :: navItemsBar"></div>
+
+  <div class="container-fluid mt-5">
+    <h2 class="mb-3 fs-4">Work Permits For Approval</h2>
+
+    <div>
+      <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+        <tr>
+          <th>Requested Date/Time</th>
+          <th>Start At</th>
+          <th>Asset</th>
+          <th>Work Description</th>
+          <th>Requested By</th>
+          <th>Approved By</th>
+          <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="permit : ${permits}">
+          <td th:text="${permit.workDate}">Work Date</td>
+          <td th:text="${permit.startTime}">Start at</td>
+          <td th:text="${permit.assetIdentifier}">Asset Identifier</td>
+          <td th:text="${permit.workDescription}">Duration</td>
+          <td th:text="${permit.requestedBy}">Requested By</td>
+          <td th:text="${permit.ApprovedBy}">Approved By</td>
+
+          <td>
+            <button class="btn btn-primary btn-sm me-2"
+                    onclick="openEditModal(this)"
+                    th:attr="data-id=${permit.id},
+                           data-workdate=${permit.workDate},
+                           data-starttime=${permit.startTime},
+                           data-assetidentifier=${permit.assetIdentifier}">
+              Edit
+            </button>
+            <a th:href="@{'/work-permits/delete/' + ${permit.id}}" class="btn btn-danger btn-sm"
+               onclick="return confirm('Are you sure you want to delete this work permit?');">Delete</a>
+          </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(permits)}">
+          <td colspan="3" class="text-left">No pending work permits for approval.</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editPermitModal" tabindex="-1" aria-labelledby="editPermitModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form id="editPermitForm">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editPermitModalLabel">Edit Work Permit</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+              <input type="hidden" id="modalPermitId" name="id" />
+
+              <div class="mb-3">
+                <label for="modalWorkDate" class="form-label">Work Date</label>
+                <input type="date" class="form-control" id="modalWorkDate" name="workDate" />
+              </div>
+
+              <div class="mb-3">
+                <label for="modalStartTime" class="form-label">Start Time</label>
+                <input type="time" class="form-control" id="modalStartTime" name="startTime" />
+              </div>
+
+              <div class="mb-3">
+                <label for="modalAssetIdentifier" class="form-label">Asset Identifier</label>
+                <input type="text" class="form-control" id="modalAssetIdentifier" name="assetIdentifier" />
+              </div>
+
+              <!-- Workers Section -->
+              <div class="mb-3">
+                <label class="form-label">Workers</label>
+                <div id="workersContainer">
+                  <div class="input-group mb-2">
+                    <input type="text" class="form-control" name="workers" placeholder="Worker Name" />
+                    <button class="btn btn-outline-danger remove-worker-btn" type="button">Remove</button>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addWorker()">Add Worker</button>
+              </div>
+
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Save changes</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function openEditModal(button) {
+        const id = button.getAttribute("data-id");
+        const workDate = button.getAttribute("data-workdate");
+        const startTime = button.getAttribute("data-starttime");
+        const assetIdentifier = button.getAttribute("data-assetidentifier");
+
+        // Populate modal fields
+        document.getElementById("modalPermitId").value = id;
+        document.getElementById("modalWorkDate").value = workDate;
+        document.getElementById("modalStartTime").value = startTime;
+        document.getElementById("modalAssetIdentifier").value = assetIdentifier;
+
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById("editPermitModal"));
+        modal.show();
+      }
+
+      // Optional: form submission via fetch
+      document.getElementById("editPermitForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const payload = {
+          id: document.getElementById("modalPermitId").value,
+          workDate: document.getElementById("modalWorkDate").value,
+          startTime: document.getElementById("modalStartTime").value,
+          assetIdentifier: document.getElementById("modalAssetIdentifier").value
+        };
+
+        fetch('/work-permits/edit', {
+          method: 'POST', // or PUT if appropriate
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        }).then(response => {
+          if (response.ok) {
+            alert("Permit updated!");
+            location.reload(); // reload to reflect changes
+          } else {
+            alert("Failed to update permit");
+          }
+        });
+      });
+
+      function addWorker() {
+        const container = document.getElementById('workersContainer');
+        const workerField = document.createElement('div');
+        workerField.className = 'input-group mb-2';
+        workerField.innerHTML = `
+          <input type="text" class="form-control" name="workers" placeholder="Worker Name" />
+          <button class="btn btn-outline-danger remove-worker-btn" type="button" onclick="removeWorker(this)">Remove</button>
+        `;
+        container.appendChild(workerField);
+      }
+
+      function removeWorker(button) {
+        const workerGroup = button.closest('.input-group');
+        workerGroup.remove();
+      }
+    </script>
+
+  </div>
+</body>
+
+</html>
+
