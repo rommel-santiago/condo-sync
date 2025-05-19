@@ -19,6 +19,16 @@ public class CondoController {
     return "home/home";
   }
 
+  @GetMapping("/units")
+  public String units() {
+    return "units/units";
+  }
+
+  @GetMapping("/residents")
+  public String residents() {
+    return "residents/residents";
+  }
+
   @GetMapping("/workPermits/forApprovals")
   public String workPermitsForApproval(Model model) {
     List<WorkPermitDto> workPermitDtos = workPermitService.getWorkPermitsForApproval();
@@ -33,16 +43,28 @@ public class CondoController {
     return "workPermits/approved";
   }
 
-  @GetMapping("/residents")
-  public String residents() {
-    return "residents";
+  @GetMapping("/gatePass")
+  public String gatePass() {
+    return "gatePass/gatePass";
   }
 
+  @GetMapping("/bookFacility")
+  public String bookFacility() {
+    return "bookFacility/bookFacility";
+  }
+  @GetMapping("/maintenanceRequests")
+  public String maintenanceRequests() {
+    return "maintenanceRequests/maintenanceRequests";
+  }
 
+  @GetMapping("/about")
+  public String about() {
+    return "about";
+  }
 
-  @GetMapping("/units")
-  public String units() {
-    return "units";
+  @GetMapping("/contact")
+  public String contact() {
+    return "contact";
   }
 
 }
