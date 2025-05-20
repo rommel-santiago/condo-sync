@@ -2,6 +2,8 @@ package com.synctrack.condosync.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import lombok.Data;
 
 @Entity
@@ -12,9 +14,6 @@ public class WorkPermit {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
-  @Column(name = "asset_id", nullable = false)
-  private Long assetId;
 
   @Column(name = "work_date", nullable = false)
   private LocalDate workDate;
@@ -37,17 +36,25 @@ public class WorkPermit {
   @Column(nullable = false, length = 20)
   private String status;
 
-  @Column(name = "requested_by", nullable = false)
-  private Long requestedBy;
-
-  @Column(name = "approved_by", nullable = false)
-  private Long approvedBy;
-
   @Column(name = "created_at", updatable = false)
   private LocalDateTime createdAt;
 
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "workPermit")
+  private List<WorkItem> workItems;
+
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "requested_by_id", nullable = false)
+  private User requestedBy;
+
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "approved_by_id", nullable = false)
+  private User approvedBy;
+
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "asset_id", nullable = false)
+  private Asset asset;
 
 }

@@ -1,6 +1,7 @@
 package com.synctrack.condosync.playground;
 
 import com.synctrack.condosync.repository.ResidentRepository;
+import com.synctrack.condosync.repository.WorkPermitRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -12,9 +13,11 @@ import org.springframework.stereotype.Component;
 public class Initial implements ApplicationListener<ContextRefreshedEvent> {
 
   private final ResidentRepository residentRepository;
+  private final WorkPermitRepository workPermitRepository;
 
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
+    workPermitRepository.getByClientId(1L);
 
     residentRepository.findAll();
 
