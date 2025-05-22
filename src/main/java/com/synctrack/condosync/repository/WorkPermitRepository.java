@@ -2,9 +2,11 @@ package com.synctrack.condosync.repository;
 
 import com.synctrack.condosync.model.WorkPermit;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,5 +23,10 @@ public interface WorkPermitRepository extends JpaRepository<WorkPermit, Long> {
             "where wp.id = :id")
     public List<WorkPermit> getByClientId(@Param("id") Long id);
 
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE WorkPermit w SET w.workDescription = :workDescription, w.status = :status, w.duration = :duration, w.controlNo = :controlNo WHERE w.id = :id")
+    int updateWorkPermitFieldsById(Long id, String workDescription, String status, Integer duration, String controlNo);
 
 }

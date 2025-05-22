@@ -23,8 +23,8 @@ public class WorkPermitController {
 
   @PostMapping(value = "/workPermit/update", produces = MediaType.APPLICATION_JSON_VALUE)
   public WorkPermitDto updateWorkPermit(@RequestBody WorkPermitDto workPermitDto) {
-    System.out.println(workPermitDto);
-    return null;
+
+    return workPermitService.updateWorkPermit(workPermitDto);
   }
 
 }

@@ -34,11 +34,11 @@
     </thead>
     <tbody>
     <tr th:each="permit : ${workPermits}">
-      <td th:text="${permit.formattedDateTime}">Request Date/Time</td>
-      <td th:text="${permit.assetFullName}">Unit</td>
-      <td th:text="${permit.workDescription}">Description</td>
-      <td th:text="${permit.status}">Status</td>
-      <td th:text="${permit.requesterName}">Requested By</td>
+      <td th:text="${permit.formattedDateTime}"></td>
+      <td th:text="${permit.assetFullName}"></td>
+      <td th:text="${permit.workDescription}"></td>
+      <td th:text="${permit.status}"></td>
+      <td th:text="${permit.requesterName}"></td>
       <td>
         <button class="btn btn-primary btn-sm" th:attr="data-id=${permit.id}" onclick="editPermit(this)">Edit</button>
       </td>
@@ -47,7 +47,7 @@
   </table>
 </div>
 
-<div class="modal fade" id="workPermitForm" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+<div class="modal fade" id="workPermitForm" tabindex="-1">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <form id="editForm">
@@ -58,49 +58,47 @@
         <div class="modal-body">
           <input type="hidden" id="id" name="id">
 
-          <div class="row">
-            <div class="col-md-12 mb-2">
+          <div class="row mb-2">
+            <div class="col-md-12">
               <label class="fw-bold">Unit</label>
               <input type="text" class="form-control bg-light" id="assetFullName" name="assetFullName" readonly>
             </div>
           </div>
 
-          <div class="row">
-            <div class="col-md-6 mb-2">
+          <div class="row mb-2">
+            <div class="col-md-6">
               <label class="fw-bold">Status</label>
               <input type="text" class="form-control bg-light" id="status" name="status" readonly>
             </div>
-            <div class="col-md-6 mb-2">
+            <div class="col-md-6">
               <label class="fw-bold">Requester Name</label>
               <input type="text" class="form-control bg-light" id="requesterName" name="requesterName" readonly>
             </div>
           </div>
 
-          <div class="row">
-            <div class="col-md-4 mb-2">
+          <div class="row mb-2">
+            <div class="col-md-4">
               <label class="fw-bold">Work Date</label>
               <input type="date" class="form-control" id="workDate" name="workDate">
             </div>
-            <div class="col-md-4 mb-2">
+            <div class="col-md-4">
               <label class="fw-bold">Start Time</label>
               <input type="text" class="form-control" id="startTime" name="startTime">
             </div>
-            <div class="col-md-4 mb-2">
+            <div class="col-md-4">
               <label class="fw-bold">Duration</label>
               <input type="number" class="form-control" id="duration" name="duration">
             </div>
           </div>
 
-          <div class="row">
-            <div class="col-md-12 mb-2">
-              <label class="fw-bold">Description</label>
-              <textarea class="form-control" id="workDescription" name="workDescription"></textarea>
-            </div>
+          <div class="mb-2">
+            <label class="fw-bold">Description</label>
+            <textarea class="form-control" id="workDescription" name="workDescription"></textarea>
           </div>
 
           <h5>Workers</h5>
           <div id="workerContainer" class="mb-3"></div>
-          <div class="text-start mb-3 ps-4">
+          <div class="mb-3 ps-4">
             <button type="button" class="btn btn-success btn-sm" onclick="addRow('workerContainer', 'workers')">
               <i class="bi bi-plus-circle"></i> Worker
             </button>
@@ -108,7 +106,7 @@
 
           <h5>Tools</h5>
           <div id="toolContainer" class="mb-3"></div>
-          <div class="text-start mb-3 ps-4">
+          <div class="mb-3 ps-4">
             <button type="button" class="btn btn-success btn-sm" onclick="addRow('toolContainer', 'tools')">
               <i class="bi bi-plus-circle"></i> Tool
             </button>
@@ -116,7 +114,7 @@
 
           <h5>Materials</h5>
           <div id="materialContainer" class="mb-3"></div>
-          <div class="text-start mb-3 ps-4">
+          <div class="mb-3 ps-4">
             <button type="button" class="btn btn-success btn-sm" onclick="addRow('materialContainer', 'materials')">
               <i class="bi bi-plus-circle"></i> Material
             </button>
@@ -135,11 +133,7 @@
 <script>
   function editPermit(button) {
     const $button = $(button);
-    const originalHtml = $button.html();
-
-    $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
-    $button.prop('disabled', true);
-
+    $button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status"></span>');
     const id = $button.data("id");
 
     $.get("/workPermit/" + id, function (data) {
@@ -158,8 +152,7 @@
 
       new bootstrap.Modal(document.getElementById("workPermitForm")).show();
     }).always(function () {
-      $button.html(originalHtml);
-      $button.prop('disabled', false);
+      $button.prop('disabled', false).html('Edit');
     });
   }
 
@@ -167,23 +160,24 @@
     const container = $('#' + containerId);
     container.empty();
     items.forEach((item, index) => {
-      const row = buildRowHtml(type, index, item.name || '');
-      container.append(row);
+      const id = item.id || '';
+      const name = item.name || '';
+      container.append(buildRowHtml(type, index, id, name));
     });
   }
 
   function addRow(containerId, type) {
     const container = document.getElementById(containerId);
     const index = container.children.length;
-    const row = buildRowHtml(type, index, '');
-    container.insertAdjacentHTML('beforeend', row);
+    container.insertAdjacentHTML('beforeend', buildRowHtml(type, index, '', ''));
   }
 
-  function buildRowHtml(type, index, nameValue) {
+  function buildRowHtml(type, index, idValue, nameValue) {
     return `
       <div class="row mb-2 align-items-center ps-4">
         <div class="col-md-12">
           <div class="input-group">
+            <input type="hidden" name="${type}[${index}].id" value="${idValue}" />
             <input type="text" class="form-control" name="${type}[${index}].name" value="${nameValue}" placeholder="Name">
             <button type="button" class="btn btn-outline-danger" onclick="removeRow(this)">
               <i class="bi bi-trash"></i>
@@ -194,12 +188,41 @@
   }
 
   function removeRow(button) {
-    button.closest('.row').remove();
+    const row = button.closest('.row');
+    $(row).addClass('text-muted').css('opacity', '0.5');
+    $(row).find('input, button').prop('disabled', true);
+    $(row).append('<input type="hidden" name="deleted" value="true">');
+
+    const undoBtn = $('<button type="button" class="btn btn-outline-secondary btn-sm ms-2">Undo</button>');
+    undoBtn.on('click', function () {
+      $(row).removeClass('text-muted').css('opacity', '1');
+      $(row).find('input, button').prop('disabled', false);
+      $(row).find("input[name='deleted']").remove();
+      $(this).remove();
+    });
+    $(row).append(undoBtn);
+  }
+
+  function collectList(type) {
+    const list = [];
+    const rows = $(`#${type.slice(0, -1)}Container .row`);
+    rows.each(function () {
+      const $row = $(this);
+      const id = $row.find(`input[name*='${type}'][name*='.id']`).val();
+      const name = $row.find(`input[name*='${type}'][name*='.name']`).val();
+      const isDeleted = $row.find("input[name='deleted']").length > 0;
+
+      list.push({
+        id: id ? parseInt(id) : null,
+        name: name?.trim() || '',
+        deleted: isDeleted
+      });
+    });
+    return list;
   }
 
   $('#editForm').submit(function (e) {
     e.preventDefault();
-
     const data = {
       id: $('#id').val(),
       assetFullName: $('#assetFullName').val(),
@@ -228,17 +251,6 @@
       }
     });
   });
-
-  function collectList(type) {
-    const list = [];
-    $(`input[name^='${type}']`).each(function () {
-      const name = $(this).val();
-      if (name && name.trim()) {
-        list.push({ name: name.trim() });
-      }
-    });
-    return list;
-  }
 </script>
 </body>
 </html>

@@ -28,4 +28,17 @@ public class WorkPermitService {
     return workPermitRepository.findById(id).map(WorkPermitDto::new).orElseGet(WorkPermitDto::new);
   }
 
+  public WorkPermitDto updateWorkPermit(WorkPermitDto wp) {
+    workPermitRepository.updateWorkPermitFieldsById(
+            wp.getId(),
+            wp.getWorkDescription(),
+            wp.getStatus(),
+            wp.getDuration(),
+            wp.getControlNo());
+
+    return workPermitRepository
+            .findById(wp.getId())
+            .map(WorkPermitDto::new).orElse(null);
+  }
+
 }
