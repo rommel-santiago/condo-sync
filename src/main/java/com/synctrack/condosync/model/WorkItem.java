@@ -1,15 +1,16 @@
 package com.synctrack.condosync.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "work_items")
 @Data
 public class WorkItem {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,10 +31,6 @@ public class WorkItem {
     @Column(name = "status", length = 20)
     private String status;
 
-    @Column(name = "quantity", nullable = false)
-    private Integer quantity;
-
-    @ManyToOne
-    @JoinColumn(name = "work_permit_id", nullable = false)
-    private WorkPermit workPermit;
+    @Column(name = "work_permit_id", nullable = false)
+    private Long workPermitId;
 }

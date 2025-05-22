@@ -2,6 +2,7 @@ package com.synctrack.condosync.playground;
 
 import com.synctrack.condosync.dto.WorkPermitDto;
 import com.synctrack.condosync.model.WorkPermit;
+import com.synctrack.condosync.repository.AssetRepository;
 import com.synctrack.condosync.repository.ResidentRepository;
 import com.synctrack.condosync.repository.WorkPermitRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,8 @@ public class Initial implements ApplicationListener<ContextRefreshedEvent> {
 
   private final ResidentRepository residentRepository;
   private final WorkPermitRepository workPermitRepository;
+
+  private final AssetRepository assetRepository;
 
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {

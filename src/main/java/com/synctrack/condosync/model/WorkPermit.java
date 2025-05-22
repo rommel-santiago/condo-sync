@@ -42,7 +42,8 @@ public class WorkPermit {
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "workPermit")
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name="work_permit_id", referencedColumnName ="id")
   private List<WorkItem> workItems;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)

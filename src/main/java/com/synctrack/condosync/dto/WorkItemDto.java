@@ -8,11 +8,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class WorkItemDto {
-  private long id;
+  private Long id;
   private String name;
+  private String status;
 
   public WorkItemDto(WorkItem item) {
     this.id = item.getId();
     this.name = item.getItemName();
+    this.status = item.getStatus();
   }
 }
