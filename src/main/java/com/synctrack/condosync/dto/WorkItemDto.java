@@ -3,8 +3,10 @@ package com.synctrack.condosync.dto;
 import com.synctrack.condosync.model.WorkItem;
 import com.synctrack.condosync.model.WorkPermit;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class WorkItemDto {
   private long id;
   private String name;

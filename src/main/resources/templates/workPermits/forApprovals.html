@@ -50,7 +50,7 @@
 <div class="modal fade" id="workPermitForm" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
-      <form id="editForm" th:action="@{/work-permits/update}" method="post">
+      <form id="editForm">
         <div class="modal-header">
           <h5 class="modal-title">Edit Work Permit</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -135,9 +135,8 @@
 <script>
   function editPermit(button) {
     const $button = $(button);
-    const originalHtml = $button.html();  // Save original button content ("Edit")
+    const originalHtml = $button.html();
 
-    // Replace button content with spinner and disable button
     $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
     $button.prop('disabled', true);
 
@@ -159,7 +158,6 @@
 
       new bootstrap.Modal(document.getElementById("workPermitForm")).show();
     }).always(function () {
-      // Restore button content and enable it when done
       $button.html(originalHtml);
       $button.prop('disabled', false);
     });
@@ -197,6 +195,49 @@
 
   function removeRow(button) {
     button.closest('.row').remove();
+  }
+
+  $('#editForm').submit(function (e) {
+    e.preventDefault();
+
+    const data = {
+      id: $('#id').val(),
+      assetFullName: $('#assetFullName').val(),
+      status: $('#status').val(),
+      requesterName: $('#requesterName').val(),
+      workDate: $('#workDate').val(),
+      startTime: $('#startTime').val(),
+      duration: $('#duration').val(),
+      workDescription: $('#workDescription').val(),
+      workers: collectList('workers'),
+      tools: collectList('tools'),
+      materials: collectList('materials')
+    };
+
+    $.ajax({
+      url: '/workPermit/update',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: function () {
+        $('#workPermitForm').modal('hide');
+        location.reload();
+      },
+      error: function () {
+        alert('Failed to update work permit.');
+      }
+    });
+  });
+
+  function collectList(type) {
+    const list = [];
+    $(`input[name^='${type}']`).each(function () {
+      const name = $(this).val();
+      if (name && name.trim()) {
+        list.push({ name: name.trim() });
+      }
+    });
+    return list;
   }
 </script>
 </body>
