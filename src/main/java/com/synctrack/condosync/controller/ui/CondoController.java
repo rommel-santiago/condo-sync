@@ -32,7 +32,7 @@ public class CondoController {
   @GetMapping("/workPermits/forApprovals")
   public String workPermitsForApproval(Model model) {
     List<WorkPermitDto> workPermitDtos = workPermitService.getWorkPermitsForApproval();
-    model.addAttribute("permits", workPermitDtos);
+    model.addAttribute("workPermits", workPermitDtos);
     return "workPermits/forApprovals";
   }
 

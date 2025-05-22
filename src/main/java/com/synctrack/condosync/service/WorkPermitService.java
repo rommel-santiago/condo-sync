@@ -24,4 +24,8 @@ public class WorkPermitService {
     return List.of(workPermitDto);
   }
 
+  public WorkPermitDto getWorkPermitById(Long id) {
+    return workPermitRepository.findById(id).map(WorkPermitDto::new).orElseGet(WorkPermitDto::new);
+  }
+
 }

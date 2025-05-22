@@ -1,5 +1,7 @@
 package com.synctrack.condosync.playground;
 
+import com.synctrack.condosync.dto.WorkPermitDto;
+import com.synctrack.condosync.model.WorkPermit;
 import com.synctrack.condosync.repository.ResidentRepository;
 import com.synctrack.condosync.repository.WorkPermitRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +19,11 @@ public class Initial implements ApplicationListener<ContextRefreshedEvent> {
 
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
-    workPermitRepository.getByClientId(1L);
+    WorkPermit wp = workPermitRepository.getByClientId(1L).get(0);
+
+    WorkPermitDto dto = new WorkPermitDto(wp);
+
+
 
     residentRepository.findAll();
 

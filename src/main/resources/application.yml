@@ -24,4 +24,4 @@ spring:
   security:
     user:
       name: user
-      password: secret123
+      password: user

@@ -2,176 +2,202 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Work Permits For Approval</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/css/navbar.css" rel="stylesheet">
+  <title>Work Permits</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/css/navbar.css">
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
+<body class="p-4">
+<div th:replace="common/navigationBar :: navItemsBar"></div>
 
-<body>
-
-  <!-- Include navbar fragment -->
-  <div th:replace="common\navigationBar :: navItemsBar"></div>
-
-  <div class="container-fluid mt-5">
-    <h2 class="mb-3 fs-4">Work Permits For Approval</h2>
-
-    <div>
-      <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-        <tr>
-          <th>Requested Date/Time</th>
-          <th>Start At</th>
-          <th>Asset</th>
-          <th>Work Description</th>
-          <th>Requested By</th>
-          <th>Approved By</th>
-          <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="permit : ${permits}">
-          <td th:text="${permit.workDate}">Work Date</td>
-          <td th:text="${permit.startTime}">Start at</td>
-          <td th:text="${permit.assetIdentifier}">Asset Identifier</td>
-          <td th:text="${permit.workDescription}">Duration</td>
-          <td th:text="${permit.requestedBy}">Requested By</td>
-          <td th:text="${permit.ApprovedBy}">Approved By</td>
-
-          <td>
-            <button class="btn btn-primary btn-sm me-2"
-                    onclick="openEditModal(this)"
-                    th:attr="data-id=${permit.id},
-                           data-workdate=${permit.workDate},
-                           data-starttime=${permit.startTime},
-                           data-assetidentifier=${permit.assetIdentifier}">
-              Edit
-            </button>
-            <a th:href="@{'/work-permits/delete/' + ${permit.id}}" class="btn btn-danger btn-sm"
-               onclick="return confirm('Are you sure you want to delete this work permit?');">Delete</a>
-          </td>
-        </tr>
-        <tr th:if="${#lists.isEmpty(permits)}">
-          <td colspan="3" class="text-left">No pending work permits for approval.</td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Edit Modal -->
-    <div class="modal fade" id="editPermitModal" tabindex="-1" aria-labelledby="editPermitModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <form id="editPermitForm">
-            <div class="modal-header">
-              <h5 class="modal-title" id="editPermitModalLabel">Edit Work Permit</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-
-              <input type="hidden" id="modalPermitId" name="id" />
-
-              <div class="mb-3">
-                <label for="modalWorkDate" class="form-label">Work Date</label>
-                <input type="date" class="form-control" id="modalWorkDate" name="workDate" />
-              </div>
-
-              <div class="mb-3">
-                <label for="modalStartTime" class="form-label">Start Time</label>
-                <input type="time" class="form-control" id="modalStartTime" name="startTime" />
-              </div>
-
-              <div class="mb-3">
-                <label for="modalAssetIdentifier" class="form-label">Asset Identifier</label>
-                <input type="text" class="form-control" id="modalAssetIdentifier" name="assetIdentifier" />
-              </div>
-
-              <!-- Workers Section -->
-              <div class="mb-3">
-                <label class="form-label">Workers</label>
-                <div id="workersContainer">
-                  <div class="input-group mb-2">
-                    <input type="text" class="form-control" name="workers" placeholder="Worker Name" />
-                    <button class="btn btn-outline-danger remove-worker-btn" type="button">Remove</button>
-                  </div>
-                </div>
-                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addWorker()">Add Worker</button>
-              </div>
-
-            </div>
-            <div class="modal-footer">
-              <button type="submit" class="btn btn-primary">Save changes</button>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      function openEditModal(button) {
-        const id = button.getAttribute("data-id");
-        const workDate = button.getAttribute("data-workdate");
-        const startTime = button.getAttribute("data-starttime");
-        const assetIdentifier = button.getAttribute("data-assetidentifier");
-
-        // Populate modal fields
-        document.getElementById("modalPermitId").value = id;
-        document.getElementById("modalWorkDate").value = workDate;
-        document.getElementById("modalStartTime").value = startTime;
-        document.getElementById("modalAssetIdentifier").value = assetIdentifier;
-
-        // Show modal
-        const modal = new bootstrap.Modal(document.getElementById("editPermitModal"));
-        modal.show();
-      }
-
-      // Optional: form submission via fetch
-      document.getElementById("editPermitForm").addEventListener("submit", function(event) {
-        event.preventDefault();
-
-        const payload = {
-          id: document.getElementById("modalPermitId").value,
-          workDate: document.getElementById("modalWorkDate").value,
-          startTime: document.getElementById("modalStartTime").value,
-          assetIdentifier: document.getElementById("modalAssetIdentifier").value
-        };
-
-        fetch('/work-permits/edit', {
-          method: 'POST', // or PUT if appropriate
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        }).then(response => {
-          if (response.ok) {
-            alert("Permit updated!");
-            location.reload(); // reload to reflect changes
-          } else {
-            alert("Failed to update permit");
-          }
-        });
-      });
-
-      function addWorker() {
-        const container = document.getElementById('workersContainer');
-        const workerField = document.createElement('div');
-        workerField.className = 'input-group mb-2';
-        workerField.innerHTML = `
-          <input type="text" class="form-control" name="workers" placeholder="Worker Name" />
-          <button class="btn btn-outline-danger remove-worker-btn" type="button" onclick="removeWorker(this)">Remove</button>
-        `;
-        container.appendChild(workerField);
-      }
-
-      function removeWorker(button) {
-        const workerGroup = button.closest('.input-group');
-        workerGroup.remove();
-      }
-    </script>
-
+<div class="container-fluid mt-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h5">
+      Work Permits For Approval
+      <span class="badge bg-warning ms-2" th:text="${#lists.size(workPermits)}"></span>
+    </h2>
   </div>
+
+  <table class="table table-bordered table-striped">
+    <thead class="table-secondary">
+    <tr>
+      <th>Request Date/Time</th>
+      <th>Unit</th>
+      <th>Description</th>
+      <th>Status</th>
+      <th>Requested By</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="permit : ${workPermits}">
+      <td th:text="${permit.formattedDateTime}">Request Date/Time</td>
+      <td th:text="${permit.assetFullName}">Unit</td>
+      <td th:text="${permit.workDescription}">Description</td>
+      <td th:text="${permit.status}">Status</td>
+      <td th:text="${permit.requesterName}">Requested By</td>
+      <td>
+        <button class="btn btn-primary btn-sm" th:attr="data-id=${permit.id}" onclick="editPermit(this)">Edit</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="modal fade" id="workPermitForm" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <form id="editForm" th:action="@{/work-permits/update}" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Work Permit</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="id" name="id">
+
+          <div class="row">
+            <div class="col-md-12 mb-2">
+              <label class="fw-bold">Unit</label>
+              <input type="text" class="form-control bg-light" id="assetFullName" name="assetFullName" readonly>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <label class="fw-bold">Status</label>
+              <input type="text" class="form-control bg-light" id="status" name="status" readonly>
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="fw-bold">Requester Name</label>
+              <input type="text" class="form-control bg-light" id="requesterName" name="requesterName" readonly>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4 mb-2">
+              <label class="fw-bold">Work Date</label>
+              <input type="date" class="form-control" id="workDate" name="workDate">
+            </div>
+            <div class="col-md-4 mb-2">
+              <label class="fw-bold">Start Time</label>
+              <input type="text" class="form-control" id="startTime" name="startTime">
+            </div>
+            <div class="col-md-4 mb-2">
+              <label class="fw-bold">Duration</label>
+              <input type="number" class="form-control" id="duration" name="duration">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12 mb-2">
+              <label class="fw-bold">Description</label>
+              <textarea class="form-control" id="workDescription" name="workDescription"></textarea>
+            </div>
+          </div>
+
+          <h5>Workers</h5>
+          <div id="workerContainer" class="mb-3"></div>
+          <div class="text-start mb-3 ps-4">
+            <button type="button" class="btn btn-success btn-sm" onclick="addRow('workerContainer', 'workers')">
+              <i class="bi bi-plus-circle"></i> Worker
+            </button>
+          </div>
+
+          <h5>Tools</h5>
+          <div id="toolContainer" class="mb-3"></div>
+          <div class="text-start mb-3 ps-4">
+            <button type="button" class="btn btn-success btn-sm" onclick="addRow('toolContainer', 'tools')">
+              <i class="bi bi-plus-circle"></i> Tool
+            </button>
+          </div>
+
+          <h5>Materials</h5>
+          <div id="materialContainer" class="mb-3"></div>
+          <div class="text-start mb-3 ps-4">
+            <button type="button" class="btn btn-success btn-sm" onclick="addRow('materialContainer', 'materials')">
+              <i class="bi bi-plus-circle"></i> Material
+            </button>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function editPermit(button) {
+    const $button = $(button);
+    const originalHtml = $button.html();  // Save original button content ("Edit")
+
+    // Replace button content with spinner and disable button
+    $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+    $button.prop('disabled', true);
+
+    const id = $button.data("id");
+
+    $.get("/workPermit/" + id, function (data) {
+      $('#id').val(data.id);
+      $('#assetFullName').val(data.assetFullName);
+      $('#status').val(data.status);
+      $('#requesterName').val(data.requesterName);
+      $('#workDate').val(data.workDate);
+      $('#startTime').val(data.startTime);
+      $('#duration').val(data.duration);
+      $('#workDescription').val(data.workDescription);
+
+      populateList("workerContainer", "workers", data.workers);
+      populateList("toolContainer", "tools", data.tools);
+      populateList("materialContainer", "materials", data.materials);
+
+      new bootstrap.Modal(document.getElementById("workPermitForm")).show();
+    }).always(function () {
+      // Restore button content and enable it when done
+      $button.html(originalHtml);
+      $button.prop('disabled', false);
+    });
+  }
+
+  function populateList(containerId, type, items) {
+    const container = $('#' + containerId);
+    container.empty();
+    items.forEach((item, index) => {
+      const row = buildRowHtml(type, index, item.name || '');
+      container.append(row);
+    });
+  }
+
+  function addRow(containerId, type) {
+    const container = document.getElementById(containerId);
+    const index = container.children.length;
+    const row = buildRowHtml(type, index, '');
+    container.insertAdjacentHTML('beforeend', row);
+  }
+
+  function buildRowHtml(type, index, nameValue) {
+    return `
+      <div class="row mb-2 align-items-center ps-4">
+        <div class="col-md-12">
+          <div class="input-group">
+            <input type="text" class="form-control" name="${type}[${index}].name" value="${nameValue}" placeholder="Name">
+            <button type="button" class="btn btn-outline-danger" onclick="removeRow(this)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function removeRow(button) {
+    button.closest('.row').remove();
+  }
+</script>
 </body>
-
 </html>
-
