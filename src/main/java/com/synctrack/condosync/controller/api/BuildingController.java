@@ -1,7 +1,5 @@
 package com.synctrack.condosync.controller.api;
 
-import com.synctrack.condosync.dto.BuildingDto;
-import com.synctrack.condosync.dto.WorkPermitDto;
 import com.synctrack.condosync.model.Building;
 import com.synctrack.condosync.service.BuildingService;
 import java.util.List;
@@ -18,7 +16,7 @@ public class BuildingController {
   private final BuildingService buildingService;
 
   @GetMapping(value = "/buildings", produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<BuildingDto> getWorkPermitById() {
+  public List<Building> getWorkPermitById() {
     return buildingService.getAllActiveBuildings();
   }
 

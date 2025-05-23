@@ -3,6 +3,7 @@ package com.synctrack.condosync.dto;
 import com.synctrack.condosync.model.Asset;
 import com.synctrack.condosync.model.Building;
 import com.synctrack.condosync.model.User;
+import com.synctrack.condosync.model.WorkItem;
 import com.synctrack.condosync.model.WorkItemType;
 import com.synctrack.condosync.model.WorkPermit;
 import java.time.LocalDate;
@@ -38,9 +39,9 @@ public class WorkPermitDto {
   private String approverName;
 
 
-  private List<WorkItemDto> workers = new ArrayList<>();
-  private List<WorkItemDto> tools = new ArrayList<>();
-  private List<WorkItemDto> materials = new ArrayList<>();
+  private List<WorkItem> workers = new ArrayList<>();
+  private List<WorkItem> tools = new ArrayList<>();
+  private List<WorkItem> materials = new ArrayList<>();
 
   public WorkPermitDto(WorkPermit workPermit) {
 
@@ -62,13 +63,13 @@ public class WorkPermitDto {
     workPermit.getWorkItems().forEach(i -> {
       switch (WorkItemType.fromString(i.getItemType())) {
         case WORKER:
-          workers.add(new WorkItemDto(i));
+          workers.add(i);
           break;
         case TOOL:
-          tools.add(new WorkItemDto(i));
+          tools.add(i);
           break;
         case MATERIAL:
-          materials.add(new WorkItemDto(i));
+          materials.add(i);
           break;
         default:
           break;

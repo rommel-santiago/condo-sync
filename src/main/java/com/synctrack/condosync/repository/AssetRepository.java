@@ -11,7 +11,12 @@ public interface AssetRepository  extends JpaRepository<Asset, Long> {
 
   @Query("select a from Asset a " +
       "join fetch a.building b " +
-      "where b.id = :id")
+      "join fetch b.condo c " +
+      "where b.id = :id " +
+      "and a.activeFlag = 'Y' " +
+      "and b.activeFlag = 'Y' " +
+      "and c.activeFlag = 'Y' " +
+      "order by a.assetIdentifier ")
   public List<Asset> getAssetsByBuildingId(Long id);
 
 }

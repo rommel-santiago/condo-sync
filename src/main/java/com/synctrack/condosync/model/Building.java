@@ -1,6 +1,7 @@
 package com.synctrack.condosync.model;
 
 import jakarta.persistence.*;
+import java.io.Serializable;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -8,30 +9,24 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "buildings")
 @Data
-public class Building {
-
+public class Building implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "building_name", nullable = false, length = 100)
     private String buildingName;
 
-    @Column(name = "comment", length = 512)
     private String comment;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", insertable = false)
     private LocalDateTime updatedAt;
 
-    @Column(name = "status", length = 20)
-    private String status;
+    private String activeFlag;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "condo_id", nullable = false)
+    @JoinColumn(name = "condoId", nullable = false)
     private Condo condo;
 
 }

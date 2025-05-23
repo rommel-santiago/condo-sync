@@ -184,15 +184,39 @@
     container.empty();
     items.forEach((item, index) => {
       const id = item.id || '';
-      const name = item.name || '';
-      container.append(buildRowHtml(type, index, id, name));
+      const itemName = item.itemName || '';
+      container.append(buildRowHtml(type, index, id, itemName));
     });
   }
 
   function addRow(containerId, type) {
     const container = document.getElementById(containerId);
     const index = container.children.length;
-    container.insertAdjacentHTML('beforeend', buildRowHtml(type, index, '', ''));
+
+    // Create a temporary wrapper to parse the HTML and get a reference to the input
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = buildRowHtml(type, index, '', '');
+
+    const newRow = tempDiv.firstElementChild;
+    container.appendChild(newRow);
+
+    // Focus the newly added input
+    const input = newRow.querySelector(`input[name="${type}[${index}].itemName"]`);
+    if (input) {
+      input.focus();
+    }
+  }
+
+  function getTypeFromRow($row) {
+    const inputName = $row.find("input[name]").first().attr("name");
+    const match = inputName?.match(/^(\w+)\[\d+\]/);
+    return match ? match[1] : '';
+  }
+
+  function getIndexFromRow($row) {
+    const inputName = $row.find("input[name]").first().attr("name");
+    const match = inputName?.match(/^\w+\[(\d+)\]/);
+    return match ? match[1] : '0';
   }
 
   function buildRowHtml(type, index, idValue, nameValue) {
@@ -201,30 +225,60 @@
         <div class="col-md-12">
           <div class="input-group">
             <input type="hidden" name="${type}[${index}].id" value="${idValue}" />
-            <input type="text" class="form-control" name="${type}[${index}].name" value="${nameValue}" placeholder="Name">
-            <button type="button" class="btn btn-outline-danger" onclick="removeRow(this)">
-              <i class="bi bi-trash"></i>
-            </button>
+            <input type="hidden" name="${type}[${index}].activeFlag" value="Y" />
+            <input type="text" class="form-control" name="${type}[${index}].itemName" value="${nameValue}" placeholder="Item Name">
+            <div class="input-group-append d-flex">
+              <button type="button" class="btn btn-outline-danger me-1" onclick="removeRow(this)">
+                <i class="bi bi-trash"></i>
+              </button>
+              <button type="button" class="btn btn-outline-secondary btn-sm btn-undo d-none" onclick="undoRemoveRow(this)">
+                Undo
+              </button>
+            </div>
           </div>
         </div>
       </div>`;
   }
 
   function removeRow(button) {
-    const row = button.closest('.row');
-    $(row).addClass('text-muted').css('opacity', '0.5');
-    $(row).find('input, button').prop('disabled', true);
-    $(row).append('<input type="hidden" name="deleted" value="true">');
+    const $row = $(button).closest('.row');
+    $row.addClass('text-muted').css('opacity', '0.5');
 
-    const undoBtn = $('<button type="button" class="btn btn-outline-secondary btn-sm ms-2">Undo</button>');
-    undoBtn.on('click', function () {
-      $(row).removeClass('text-muted').css('opacity', '1');
-      $(row).find('input, button').prop('disabled', false);
-      $(row).find("input[name='deleted']").remove();
-      $(this).remove();
-    });
-    $(row).append(undoBtn);
+    // Make all text inputs readonly
+    $row.find('input[type="text"]').prop('readonly', true);
+
+    // ✅ Set activeFlag to "N"
+    const flagInput = $row.find("input[name*='.activeFlag']");
+    if (flagInput.length > 0) {
+      flagInput.val('N');
+      console.log('activeFlag set to N');
+    } else {
+      console.warn('activeFlag input not found in row');
+    }
+
+    // Show the undo button
+    $row.find('.btn-undo').removeClass('d-none');
+
+    // Disable the trash button
+    $(button).prop('disabled', true);
   }
+
+  function undoRemoveRow(button) {
+    const $row = $(button).closest('.row');
+    $row.removeClass('text-muted').css('opacity', '1');
+
+    // Restore text input to editable
+    $row.find('input[type="text"]').prop('readonly', false);
+
+    const flagInput = $row.find("input[name*='.activeFlag']");
+    if (flagInput.length > 0) {
+      flagInput.val('Y');
+    }
+
+    $(button).addClass('d-none');
+    $row.find('.btn-outline-danger').prop('disabled', false);
+  }
+
 
   function collectList(type) {
     const list = [];
@@ -232,13 +286,14 @@
     rows.each(function () {
       const $row = $(this);
       const id = $row.find(`input[name*='${type}'][name*='.id']`).val();
-      const name = $row.find(`input[name*='${type}'][name*='.name']`).val();
-      const isDeleted = $row.find("input[name='deleted']").length > 0;
+      const itemName = $row.find(`input[name*='${type}'][name*='.itemName']`).val();
+      const activeFlagInput = $row.find("input[name*='.activeFlag']");
+      const activeFlag = activeFlagInput.length > 0 ? activeFlagInput.val() : 'Y';
 
       list.push({
         id: id ? parseInt(id) : null,
-        name: name?.trim() || '',
-        deleted: isDeleted
+        itemName: itemName?.trim() || '',
+        activeFlag: activeFlag
       });
     });
     return list;
@@ -246,6 +301,18 @@
 
   $('#editForm').submit(function (e) {
     e.preventDefault();
+
+    //Validations
+
+    const startTime = $('#startTime').val().trim();
+    if (!validateStartTime(startTime)) {
+      alert('Start Time must be a 4-digit number between 0000 and 2359 (HHmm format).');
+      $('#startTime').focus();
+      return;
+    }
+
+
+    //Call Ajax
 
     const $saveBtn = $(this).find('button[type="submit"]');
     const originalHtml = $saveBtn.html();
@@ -290,6 +357,18 @@
       }
     });
   });
+
+  function validateStartTime(value) {
+    if (!/^\d{4}$/.test(value)) return false; // must be exactly 4 digits
+
+    const hours = parseInt(value.substring(0, 2), 10);
+    const minutes = parseInt(value.substring(2, 4), 10);
+
+    if (hours < 0 || hours > 23) return false;
+    if (minutes < 0 || minutes > 59) return false;
+
+    return true;
+  }
 
   function showAddModal() {
     // Set modal title

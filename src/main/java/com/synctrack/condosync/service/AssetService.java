@@ -1,12 +1,9 @@
 package com.synctrack.condosync.service;
 
-import com.synctrack.condosync.dto.AssetDto;
-import com.synctrack.condosync.dto.BuildingDto;
-import com.synctrack.condosync.model.Status;
+import com.synctrack.condosync.model.Asset;
 import com.synctrack.condosync.repository.AssetRepository;
-import com.synctrack.condosync.repository.BuildingRepository;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +12,9 @@ import org.springframework.stereotype.Service;
 public class AssetService {
   private final AssetRepository assetRepository;
 
-  public List<AssetDto> getAllAssetsByBuildingId(Long buildingId) {
-    return assetRepository
-        .getAssetsByBuildingId(buildingId).stream()
-        .map(AssetDto::new)
-        .collect(Collectors.toList());
-
+  public List<Asset> getAllAssetsByBuildingId(Long buildingId) {
+    return new ArrayList<>(assetRepository
+        .getAssetsByBuildingId(buildingId));
   }
 
 }

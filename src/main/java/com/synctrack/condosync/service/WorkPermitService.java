@@ -1,16 +1,14 @@
 package com.synctrack.condosync.service;
 
 import com.synctrack.condosync.dto.WorkPermitDto;
-import com.synctrack.condosync.model.Status;
+import com.synctrack.condosync.model.ActiveFlagType;
 import com.synctrack.condosync.model.WorkItem;
 import com.synctrack.condosync.model.WorkItemType;
 import com.synctrack.condosync.repository.WorkItemRepository;
-import java.time.LocalDate;
 import java.util.List;
 
 import com.synctrack.condosync.model.WorkPermit;
 import com.synctrack.condosync.repository.WorkPermitRepository;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,20 +46,39 @@ public class WorkPermitService {
 
     wp.getWorkers().forEach(w -> {
       if (w.getId() != null && w.getId() > 0) {
-        workItemRepository.updateWorkItemName(w.getId(), w.getName());
+        workItemRepository.updateWorkItemCols(w.getId(), w.getItemName(), w.getActiveFlag());
       } else {
-        WorkItem newItem = new WorkItem();
-        newItem.setItemType(WorkItemType.WORKER.name());
-        newItem.setItemName(w.getName());
-        newItem.setWorkPermitId(wp.getId());
-        newItem.setStatus(Status.ACTIVE.name());
-        workItemRepository.save(newItem);
+        addWorkItem(wp, w, WorkItemType.WORKER);
       }
     });
+
+    wp.getTools().forEach(w -> {
+      if (w.getId() != null && w.getId() > 0) {
+        workItemRepository.updateWorkItemCols(w.getId(), w.getItemName(), w.getActiveFlag());
+      } else {
+        addWorkItem(wp, w, WorkItemType.TOOL);
+      }
+    });
+
+    wp.getMaterials().forEach(w -> {
+      if (w.getId() != null && w.getId() > 0) {
+        workItemRepository.updateWorkItemCols(w.getId(), w.getItemName(), w.getActiveFlag());
+      } else {
+        addWorkItem(wp, w, WorkItemType.MATERIAL);
+      }
+    });
+
 
     return workPermitRepository
             .findById(wp.getId())
             .map(WorkPermitDto::new).orElse(null);
+  }
+
+  private void addWorkItem(WorkPermitDto workPermit, WorkItem workItem,  WorkItemType workItemType) {
+    workItem.setItemType(workItemType.name());
+    workItem.setWorkPermitId(workPermit.getId());
+    workItem.setActiveFlag(ActiveFlagType.Yes.getValue());
+    workItemRepository.save(workItem);
   }
 
 }
