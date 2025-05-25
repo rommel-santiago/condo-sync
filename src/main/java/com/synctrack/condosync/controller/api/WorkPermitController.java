@@ -1,7 +1,9 @@
 package com.synctrack.condosync.controller.api;
 
 import com.synctrack.condosync.dto.WorkPermitDto;
+import com.synctrack.condosync.model.WorkPermitHistory;
 import com.synctrack.condosync.service.WorkPermitService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +27,11 @@ public class WorkPermitController {
   public WorkPermitDto updateWorkPermit(@RequestBody WorkPermitDto workPermitDto) {
 
     return workPermitService.updateWorkPermit(workPermitDto);
+  }
+
+  @GetMapping(value = "/workPermit/history/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<WorkPermitHistory> getWorkPermitHistory(@PathVariable("id") long id) {
+    return workPermitService.findWorkPermitHistory(id);
   }
 
 }

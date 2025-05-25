@@ -4,7 +4,9 @@ import com.synctrack.condosync.dto.WorkPermitDto;
 import com.synctrack.condosync.model.ActiveFlagType;
 import com.synctrack.condosync.model.WorkItem;
 import com.synctrack.condosync.model.WorkItemType;
+import com.synctrack.condosync.model.WorkPermitHistory;
 import com.synctrack.condosync.repository.WorkItemRepository;
+import com.synctrack.condosync.repository.WorkPermitHistoryRepository;
 import java.util.List;
 
 import com.synctrack.condosync.model.WorkPermit;
@@ -19,6 +21,8 @@ public class WorkPermitService {
 
   private final WorkPermitRepository workPermitRepository;
   private final WorkItemRepository workItemRepository;
+
+  private final WorkPermitHistoryRepository workPermitHistoryRepository;
 
   public List<WorkPermitDto> getWorkPermitsForApproval() {
 
@@ -72,6 +76,11 @@ public class WorkPermitService {
     return workPermitRepository
             .findById(wp.getId())
             .map(WorkPermitDto::new).orElse(null);
+  }
+
+
+  public List<WorkPermitHistory> findWorkPermitHistory(long workPermitId) {
+    return workPermitHistoryRepository.findHistoryByWorkPermitId(workPermitId);
   }
 
   private void addWorkItem(WorkPermitDto workPermit, WorkItem workItem,  WorkItemType workItemType) {

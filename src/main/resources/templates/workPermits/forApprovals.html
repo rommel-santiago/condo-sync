@@ -50,6 +50,8 @@
   </table>
 </div>
 
+<-- Work Permit Modal -->
+
 <div class="modal fade" id="workPermitForm" tabindex="-1">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
@@ -83,7 +85,12 @@
           <div class="row mb-2">
             <div class="col-md-6">
               <label class="fw-bold">Status</label>
-              <input type="text" class="form-control bg-light" id="status" name="status" readonly>
+              <div class="input-group">
+                <input type="text" class="form-control bg-light" id="status" name="status" readonly>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="openHistoryModal()">
+                  History
+                </button>
+              </div>
             </div>
             <div class="col-md-6">
               <label class="fw-bold">Requester Name</label>
@@ -144,6 +151,40 @@
     </div>
   </div>
 </div>
+
+<!-- Work Permit History Modal -->
+<div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Work Permit History</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-bordered">
+          <thead class="table-light">
+          <tr>
+            <th>Date</th>
+            <th>User Name</th>
+            <th>Status</th>
+            <th>Comment</th>
+          </tr>
+          </thead>
+          <tbody id="historyTableBody">
+          <!-- Rows will be inserted here dynamically -->
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
 
 <script>
   function editPermit(button) {
@@ -411,6 +452,35 @@
     // Show modal
     new bootstrap.Modal(document.getElementById("workPermitForm")).show();
   }
+
+  function openHistoryModal() {
+    const permitId = $('#id').val(); // Use the current permit ID from the form
+    const $tbody = $('#historyTableBody');
+    $tbody.empty();
+
+    $.get(`/workPermit/history/${permitId}`, function (data) {
+      if (data.length === 0) {
+        $tbody.append('<tr><td colspan="4" class="text-center">No history available</td></tr>');
+      } else {
+        data.forEach(item => {
+          $tbody.append(`
+            <tr>
+              <td>${item.statusDateTime || ''}</td>
+              <td>${item.user.fullName || ''}</td>
+              <td>${item.status || ''}</td>
+              <td>${item.comment || ''}</td>
+            </tr>
+          `);
+        });
+      }
+
+      new bootstrap.Modal(document.getElementById('historyModal')).show();
+    }).fail(() => {
+      $tbody.append('<tr><td colspan="4" class="text-danger text-center">Failed to load history</td></tr>');
+      new bootstrap.Modal(document.getElementById('historyModal')).show();
+    });
+  }
+
 
 </script>
 </body>
