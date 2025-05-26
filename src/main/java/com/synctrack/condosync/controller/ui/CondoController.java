@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,6 +32,13 @@ public class CondoController {
 
   @GetMapping("/workPermits/forApprovals")
   public String workPermitsForApproval(Model model) {
+    List<WorkPermitDto> workPermitDtos = workPermitService.getWorkPermitsForApproval();
+    model.addAttribute("workPermits", workPermitDtos);
+    return "workPermits/forApprovals";
+  }
+
+  @GetMapping("/workPermits/forUser/{id}")
+  public String workPermitsForUser(@PathVariable("id") Long id, Model model) {
     List<WorkPermitDto> workPermitDtos = workPermitService.getWorkPermitsForApproval();
     model.addAttribute("workPermits", workPermitDtos);
     return "workPermits/forApprovals";
@@ -65,6 +73,11 @@ public class CondoController {
   @GetMapping("/contact")
   public String contact() {
     return "contact";
+  }
+
+  @GetMapping("/userMainMenu")
+  public String userMainMenu() {
+    return "userMainMenu";
   }
 
 }
