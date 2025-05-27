@@ -22,6 +22,22 @@ spring:
     prefix: classpath:/templates/
     suffix: .html
   security:
-    user:
-      name: user
-      password: user
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 835803190087-v7i0b1ns3g81cmvph0t1l6j4btnvu1vp.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - email
+              - profile
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+
+logging:
+  level:
+    org.springframework.security: DEBUG

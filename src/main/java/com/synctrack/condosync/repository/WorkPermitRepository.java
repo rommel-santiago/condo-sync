@@ -39,7 +39,7 @@ public interface WorkPermitRepository extends JpaRepository<WorkPermit, Long> {
         "left join fetch wp.requestedBy rb " +
         "left join fetch wp.approvedBy ab " +
         "left join fetch wp.workItems wi " +
-        "where a.id = :id " +
+        "where wp.id = :id " +
         "and  wp.activeFlag = 'Y' " +
         "and  a.activeFlag = 'Y' " +
         "and  b.activeFlag = 'Y' " +
