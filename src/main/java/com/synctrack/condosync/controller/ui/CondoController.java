@@ -41,7 +41,7 @@ public class CondoController {
 
   @GetMapping("/workPermits/forUser/{id}")
   public String workPermitsForUser(@PathVariable("id") Long id, Model model) {
-    List<WorkPermitDto> workPermitDtos = workPermitService.getWorkPermitsForApproval();
+    List<WorkPermitDto> workPermitDtos = workPermitService.getWorkPermitsForRequester(id);
     model.addAttribute("workPermits", workPermitDtos);
     return "workPermits/forUser";
   }

@@ -5,6 +5,7 @@ import java.io.Serializable;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "assets")

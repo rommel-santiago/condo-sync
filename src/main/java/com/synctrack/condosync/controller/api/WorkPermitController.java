@@ -25,6 +25,11 @@ public class WorkPermitController {
     return workPermitService.getWorkPermitById(id);
   }
 
+  @PostMapping(value = "/workPermit/add", produces = MediaType.APPLICATION_JSON_VALUE)
+  public WorkPermitDto addWorkPermit(@RequestBody WorkPermitDto workPermitDto) {
+
+    return workPermitService.addWorkPermit(workPermitDto);
+  }
   @PostMapping(value = "/workPermit/update", produces = MediaType.APPLICATION_JSON_VALUE)
   public WorkPermitDto updateWorkPermit(@RequestBody WorkPermitDto workPermitDto) {
 

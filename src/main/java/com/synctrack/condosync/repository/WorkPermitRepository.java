@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 public interface WorkPermitRepository extends JpaRepository<WorkPermit, Long> {
 
-    @Query("select wp from WorkPermit wp " +
+    @Query("select distinct wp from WorkPermit wp " +
             "join fetch wp.asset a " +
             "join fetch a.building b " +
             "join fetch b.condo c " +
@@ -32,7 +32,19 @@ public interface WorkPermitRepository extends JpaRepository<WorkPermit, Long> {
             "and  wi.activeFlag = 'Y' ")
     public List<WorkPermit> getByClientId(@Param("id") Long id);
 
-    @Query("select wp from WorkPermit wp " +
+    @Query("select distinct wp from WorkPermit wp " +
+        "join wp.asset a on a.activeFlag = 'Y' " +
+        "join a.building b on b.activeFlag = 'Y' " +
+        "join b.condo c on c.activeFlag = 'Y' " +
+        "left join wp.requestedBy rb on rb.activeFlag = 'Y' " +
+        "left join wp.approvedBy ab on ab.activeFlag = 'Y'  " +
+        "left join wp.workItems wi on wi.activeFlag = 'Y' " +
+        "where rb.id = :id " +
+        "and  wp.activeFlag = 'Y' ")
+    public List<WorkPermit> getByRequestedById(@Param("id") Long id);
+
+
+    @Query("select distinct wp from WorkPermit wp " +
         "join fetch wp.asset a " +
         "join fetch a.building b " +
         "join fetch b.condo c " +

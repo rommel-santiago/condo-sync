@@ -32,10 +32,10 @@ public class WorkPermitDto {
   private long assetId;
   private String assetFullName;
 
-  private long requesterId;
+  private Long requesterId;
   private String requesterName;
 
-  private long approverId;
+  private Long approverId;
   private String approverName;
 
 

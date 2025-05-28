@@ -32,8 +32,10 @@ public class WorkPermit implements Serializable {
 
   private String activeFlag;
 
+  @Column(insertable = false, updatable = false)
   private LocalDateTime createdAt;
 
+  @Column(insertable = false, updatable = false)
   private LocalDateTime updatedAt;
 
   @OneToMany(fetch = FetchType.LAZY)
@@ -44,8 +46,8 @@ public class WorkPermit implements Serializable {
   @JoinColumn(name = "requested_by_id", nullable = false)
   private User requestedBy;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "approved_by_id", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY, optional = true)
+  @JoinColumn(name = "approved_by_id", nullable = true)
   private User approvedBy;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
